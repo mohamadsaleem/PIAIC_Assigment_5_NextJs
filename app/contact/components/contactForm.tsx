@@ -45,7 +45,7 @@ export default function ContactForm() {
   });
   const [contactInfoList, setContactInfoList] = useState<contactType[]>([]);
 
-  const [error, setError] = useState([]);
+  const [error, setError] = useState<string[]>([]);
 
   const onChangeHandler = (event: onChangeEventType) => {
     setContactInfo({
@@ -57,29 +57,35 @@ export default function ContactForm() {
   };
 
   const onClickHandler = async () => {
-    // try {
-    //   const result = await schema.validate(contactInfo);
-    //   console.log(result);
-    // } catch (error) {
-    //   debugger;
-    //   setError(error);
-    // }
+    try {
+      const result = await schema.validate(contactInfo);
+      console.log(result);
 
-    let contactList: contactType[] = [...contactInfoList, contactInfo];
-    setContactInfoList(contactList);
-    console.log(contactList);
-    setContactInfo({
-      productName: "",
-      quantity: 0,
-      price: 0,
-      customerName: "",
-      customerEmail: "",
-      paymentMethod: "",
-      address: "",
-      city: "",
-      state: "",
-      zipCode: "",
-    });
+      if (!result) {
+        return;
+      }
+
+      let contactList: contactType[] = [...contactInfoList, contactInfo];
+      setContactInfoList(contactList);
+      console.log(contactList);
+      setContactInfo({
+        productName: "",
+        quantity: 0,
+        price: 0,
+        customerName: "",
+        customerEmail: "",
+        paymentMethod: "",
+        address: "",
+        city: "",
+        state: "",
+        zipCode: "",
+      });
+
+      setError([]);
+    } catch (err) {
+      debugger;
+      setError(err.errors);
+    }
   };
 
   return (
@@ -297,7 +303,9 @@ export default function ContactForm() {
           </div>
         </form>
         <div>
-          <p >{error}</p>
+          {error.map((item) => {
+            return <h1 style={{ color: "red" }}>{item}</h1>;
+          })}
         </div>
       </div>
 
